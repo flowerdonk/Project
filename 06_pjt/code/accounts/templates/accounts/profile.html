@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1> {{person.username}} 님의 프로필</h1>
+  <div>
+    <p>팔로잉: {{person.followings.all|length}}</p>
+    <!--{{person.followings.count}} -->
+    <p>팔로워: {{person.followers.all|length}}</p>
+    <!--{{person.followers.count}} -->
+    <form action="{% url 'accounts:follow' person.pk%}" method='POST'>
+      {% csrf_token %}
+      {% if request.user in person.followers.all %}
+        <button type='submit' class='btn btn-danger'>Unfollow</button>
+      {% else %}
+        <button type='submit' class='btn btn-success'>Follow</button>
+      {% endif %}
+    </form>
+  </div>
+  <hr>
+
+  <h2> {{person.username}}'s 게시물</h2>
+  {% for article in person.article_set.all  %}
+    <!--부트스트랩 card-->
+    <div class="card"> 
+      <div class="card-body">
+        <h5 class="card-title">{{article.title}}</h5>
+        <p class="card-text">{{article.content}}</p>
+        <a href="{% url 'articles:detail' article.pk %}" class="btn btn-primary">
+          자세히 보기
+        </a>
+      </div>
+    </div>
+  {% endfor %}
+  <hr><br><br>
+  <h5>{{ person.username }}님이 좋아한 게시글</h5>
+  {% for article in person.like_articles.all %}
+    <div>{{article.title}}</div>
+  {% endfor %}
+  <hr>
+  <a href="{% url 'articles:index' %}" class="btn btn-success">뒤로가기</a>
+
+{% endblock  %}
